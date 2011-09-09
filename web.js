@@ -6,6 +6,8 @@ var express   = require('express');
 var FacebookClient = require('facebook-client').FacebookClient;
 var facebook = new FacebookClient();
 
+var uuid = require('node-uuid');
+
 // configure facebook authentication
 everyauth.facebook
   .appId(process.env.FACEBOOK_APP_ID)
@@ -60,24 +62,27 @@ app.get('/home', function(request, response) {
     var token = request.session.auth.facebook.accessToken;
     facebook.getSessionByAccessToken(token)(function(session) {
 
-      // query 3 friends and send them to the socket for this auth token
+      // generate a uuid for socket association
+      var socket_id = uuid();
+
+      // query 3 friends and send them to the socket for this socket id
       session.graphCall('/me/friends&limit=3')(function(result) {
         result.data.forEach(function(friend) {
-          socket_manager.send(token, 'friend', friend);
+          socket_manager.send(socket_id, 'friend', friend);
         });
       });
 
-      // query 2 photos and send them to the socket for this auth token
+      // query 2 photos and send them to the socket for this socket id
       session.graphCall('/me/photos&limit=2')(function(result) {
         result.data.forEach(function(photo) {
-          socket_manager.send(token, 'photo', photo);
+          socket_manager.send(socket_id, 'photo', photo);
         });
       });
 
-      // query 11 likes and send them to the socket for this auth token
+      // query 11 likes and send them to the socket for this socket id
       session.graphCall('/me/likes&limit=11')(function(result) {
         result.data.forEach(function(like) {
-          socket_manager.send(token, 'like', like);
+          socket_manager.send(socket_id, 'like', like);
         });
       });
 
@@ -87,7 +92,7 @@ app.get('/home', function(request, response) {
         format: 'json'
       })(function(result) {
         result.forEach(function(friend) {
-          socket_manager.send(token, 'friend_using_app', friend);
+          socket_manager.send(socket_id, 'friend_using_app', friend);
         });
       });
 
@@ -101,7 +106,8 @@ app.get('/home', function(request, response) {
           app:      app,
           user:     request.session.auth.facebook.user,
           home:     'http://' + request.headers.host + '/',
-          redirect: 'http://' + request.headers.host + request.url
+          redirect: 'http://' + request.headers.host + request.url,
+          socket_id: socket_id
         });
 
       });
