@@ -15,7 +15,7 @@ everyauth.facebook
   .findOrCreateUser(function() {
     return({});
   })
-  .redirectPath('/facebook');
+  .redirectPath('/home');
 
 var app = express.createServer(
   express.logger(),
@@ -40,7 +40,7 @@ io.configure(function () {
   io.set("polling duration", 10);
 });
 
-app.get('/facebook', function(request, response) {
+app.get('/home', function(request, response) {
   if (request.session.auth) {
     var token = request.session.auth.facebook.accessToken;
 
