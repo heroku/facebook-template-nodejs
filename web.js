@@ -35,6 +35,11 @@ app.listen(port, function() {
 var io = require('socket.io').listen(app);
 var socket_manager = require('socket_manager').create(io);
 
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
+});
+
 app.get('/facebook', function(request, response) {
   if (request.session.auth) {
     var token = request.session.auth.facebook.accessToken;
