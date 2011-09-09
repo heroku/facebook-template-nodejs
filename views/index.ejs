@@ -88,12 +88,12 @@
         // when a friend is received from the backend, add it to the page
         socket.on('friend_using_app', function(friend) {
           console.log(friend);
-          $('ul#friends_using_app').append('                                                          \
-            <li style="background-image: url(https://graph.facebook.com/' + friend.id + '/picture)">  \
-              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">       \
-                ' + friend.name + '                                                                   \
-              </a>                                                                                    \
-            </li>                                                                                     \
+          $('ul#friends_using_app').append('                                                     \
+            <li style="background-image: url(' + friend.pic_square + ');">                       \
+              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">  \
+                ' + friend.name + '                                                              \
+              </a>                                                                               \
+            </li>                                                                                \
           ');
         });
       });
