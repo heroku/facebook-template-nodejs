@@ -13,7 +13,7 @@
     <meta charset="utf-8">
 
     <!-- We get the name of the app out of the information fetched -->
-    <title>APPNAME</title>
+    <title><%= app.name %></title>
     <link rel="stylesheet" href="stylesheets/screen.css" media="screen">
 
     <!-- These are Open Graph tags.  They add meta data to your  -->
@@ -26,7 +26,7 @@
     <meta property="og:url" content=""/>
     <meta property="og:image" content=""/>
     <meta property="og:site_name" content=""/>
-    <meta property="fb:app_id" content="<%= app_id %>"/>
+    <meta property="fb:app_id" content="<%= app.id %>"/>
 
     <script src="/scripts/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -116,17 +116,17 @@
 
       <div>
         <h1>Welcome, <strong><%= user.name %></strong></h1>
-        <p class="tagline">This app is named APPNAME</p>
+        <p class="tagline">This app is named <%= app.name %></p>
         <div id="share-app">
           <p>Share your app:</p>
           <ul>
             <li>
-              <a href="#" class="facebook-button" onclick="popup('http://www.facebook.com/dialog/feed?redirect_uri=<%= redirect %>&display=popup&app_id=<%= app_id %>', 'Post to Wall', 580, 400);">
+              <a href="#" class="facebook-button" onclick="popup('http://www.facebook.com/dialog/feed?redirect_uri=<%= redirect %>&display=popup&app_id=<%= app.id %>', 'Post to Wall', 580, 400);">
                 <span class="plus">Post to Wall</span>
               </a>
             </li>
             <li>
-            <a href="#" class="facebook-button speech-bubble" onclick="popup('https://www.facebook.com/dialog/send?redirect_uri=<%= redirect %>&display=popup&app_id=<%= app_id %>&link=<%= home %>', 'Send', 580, 400);">
+            <a href="#" class="facebook-button speech-bubble" onclick="popup('https://www.facebook.com/dialog/send?redirect_uri=<%= redirect %>&display=popup&app_id=<%= app.id %>&link=<%= home %>', 'Send', 580, 400);">
                 <span class="speech-bubble">Send to Friends</span>
               </a>
             </li>

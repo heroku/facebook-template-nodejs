@@ -73,16 +73,20 @@ app.get('/facebook', function(request, response) {
         });
       });
 
-    });
+      // get information about the app itself
+      session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
 
-    // render the static page
-    response.render('index.ejs', {
-      layout:   false,
-      token:    token,
-      app_id:   process.env.FACEBOOK_APP_ID,
-      user:     request.session.auth.facebook.user,
-      home:     'http://' + request.headers.host + '/',
-      redirect: 'http://' + request.headers.host + request.url
+        // render the static page
+        response.render('index.ejs', {
+          layout:   false,
+          token:    token,
+          app:      app,
+          user:     request.session.auth.facebook.user,
+          home:     'http://' + request.headers.host + '/',
+          redirect: 'http://' + request.headers.host + request.url
+        });
+
+      });
     });
 
   } else {
