@@ -6,6 +6,7 @@ var express   = require('express');
 var FacebookClient = require('facebook-client').FacebookClient;
 var facebook = new FacebookClient();
 
+// configure facebook authentication
 everyauth.facebook
   .appId(process.env.FACEBOOK_APP_ID)
   .appSecret(process.env.FACEBOOK_SECRET)
@@ -17,6 +18,7 @@ everyauth.facebook
   })
   .redirectPath('/home');
 
+// create an express webserver
 var app = express.createServer(
   express.logger(),
   express.static(__dirname + '/public'),
@@ -26,44 +28,60 @@ var app = express.createServer(
   require('facebook').Facebook()
 );
 
+// listen to the PORT given to us in the environment
 var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
+// create a socket.io backend for sending facebook graph data
+// to the browser as we receive it
 var io = require('socket.io').listen(app);
+
+// wrap socket.io with basic identification and message queueing
+// code is in lib/socket_manager.js
 var socket_manager = require('socket_manager').create(io);
 
+// use xhr-polling as the transport for socket.io
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10);
 });
 
+// respond to GET /home
 app.get('/home', function(request, response) {
-  if (request.session.auth) {
-    var token = request.session.auth.facebook.accessToken;
 
+  // if we have facebook auth credentials
+  if (request.session.auth) {
+
+    // initialize facebook-client with the access token to gain access
+    // to helper methods for the REST api
+    var token = request.session.auth.facebook.accessToken;
     facebook.getSessionByAccessToken(token)(function(session) {
 
+      // query 3 friends and send them to the socket for this auth token
       session.graphCall('/me/friends&limit=3')(function(result) {
         result.data.forEach(function(friend) {
           socket_manager.send(token, 'friend', friend);
         });
       });
 
+      // query 2 photos and send them to the socket for this auth token
       session.graphCall('/me/photos&limit=2')(function(result) {
         result.data.forEach(function(photo) {
           socket_manager.send(token, 'photo', photo);
         });
       });
 
+      // query 11 likes and send them to the socket for this auth token
       session.graphCall('/me/likes&limit=11')(function(result) {
         result.data.forEach(function(like) {
           socket_manager.send(token, 'like', like);
         });
       });
 
+      // use fql to get a list of my friends that are using this app
       session.restCall('fql.query', {
         query: 'SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1',
         format: 'json'
@@ -76,8 +94,8 @@ app.get('/home', function(request, response) {
       // get information about the app itself
       session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
 
-        // render the static page
-        response.render('index.ejs', {
+        // render the home page
+        response.render('home.ejs', {
           layout:   false,
           token:    token,
           app:      app,
@@ -91,7 +109,8 @@ app.get('/home', function(request, response) {
 
   } else {
 
-    // not authenticated, redirect to /
+    // not authenticated, redirect to / for everyauth to begin authentication
     response.redirect('/');
+
   }
 });
