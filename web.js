@@ -14,7 +14,6 @@ everyauth.facebook
   .appSecret(process.env.FACEBOOK_SECRET)
   .scope('publish_actions,user_likes,user_photos,user_photo_video_tags')
   .entryPath('/')
-  .callbackPath('/auth/facebook')
   .findOrCreateUser(function() {
     return({});
   })
@@ -57,8 +56,10 @@ app.get('/home', function(request, response) {
   // detect the http method uses so we can replicate it on redirects
   var method = request.headers.HTTP_X_FORWARDED_PROTO || 'http';
 
-  // set up the redirect path to the full url, including http method
-  everyauth.facebook.redirectPath(method + '://' + request.host + '/home');
+  // set up the redirect paths to the full url, including http method
+  everyauth.facebook
+    .callbackPath(method + '://' + request.host + '/auth/facebook')
+    .redirectPath(method + '://' + request.host + '/home');
 
   // if we have facebook auth credentials
   if (request.session.auth) {
