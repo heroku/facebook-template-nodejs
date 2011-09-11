@@ -25,7 +25,8 @@ var app = express.createServer(
   express.logger(),
   express.static(__dirname + '/public'),
   express.cookieParser(),
-  express.session({ secret: process.env.SESSION_SECRET }),
+  // set this to a secret value to encrypt session cookies
+  express.session({ secret: process.env.SESSION_SECRET || 'secret123' }),
   everyauth.middleware(),
   require('facebook').Facebook()
 );
