@@ -100,14 +100,16 @@ app.get('/home', function(request, response) {
       // get information about the app itself
       session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
 
+        var method = request.headers.HTTP_X_FORWARDED_PROTO || 'http';
+
         // render the home page
         response.render('home.ejs', {
           layout:   false,
           token:    token,
           app:      app,
           user:     request.session.auth.facebook.user,
-          home:     'http://' + request.headers.host + '/',
-          redirect: 'http://' + request.headers.host + request.url,
+          home:     method + '://' + request.headers.host + '/',
+          redirect: method + '://' + request.headers.host + request.url,
           socket_id: socket_id
         });
 
