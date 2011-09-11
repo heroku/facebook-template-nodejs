@@ -18,7 +18,6 @@ everyauth.facebook
   .findOrCreateUser(function() {
     return({});
   })
-  .redirectPath('/home');
 
 // create an express webserver
 var app = express.createServer(
@@ -54,6 +53,12 @@ io.configure(function () {
 
 // respond to GET /home
 app.get('/home', function(request, response) {
+
+  // detect the http method uses so we can replicate it on redirects
+  var method = request.headers.HTTP_X_FORWARDED_PROTO || 'http';
+
+  // set up the redirect path to the full url, including http method
+  everyauth.facebook.redirectPath(method + '://' + request.host + '/home');
 
   // if we have facebook auth credentials
   if (request.session.auth) {
@@ -99,8 +104,6 @@ app.get('/home', function(request, response) {
 
       // get information about the app itself
       session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
-
-        var method = request.headers.HTTP_X_FORWARDED_PROTO || 'http';
 
         // render the home page
         response.render('home.ejs', {
