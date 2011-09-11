@@ -14,6 +14,7 @@ everyauth.facebook
   .appSecret(process.env.FACEBOOK_SECRET)
   .scope('publish_actions,user_likes,user_photos,user_photo_video_tags')
   .entryPath('/')
+  .redirectPath('/home')
   .findOrCreateUser(function() {
     return({});
   })
@@ -25,6 +26,12 @@ var app = express.createServer(
   express.cookieParser(),
   // set this to a secret value to encrypt session cookies
   express.session({ secret: process.env.SESSION_SECRET || 'secret123' }),
+  // insert a middleware to set the facebook redirect hostname to http/https dynamically
+  function(request, response, next) {
+    var method = request.headers['x-forwarded-proto'] || 'http';
+    everyauth.facebook.myHostname(method + '://' + request.headers.host);
+    next();
+  },
   everyauth.middleware(),
   require('facebook').Facebook()
 );
@@ -54,12 +61,7 @@ io.configure(function () {
 app.get('/home', function(request, response) {
 
   // detect the http method uses so we can replicate it on redirects
-  var method = request.headers.HTTP_X_FORWARDED_PROTO || 'http';
-
-  // set up the redirect paths to the full url, including http method
-  everyauth.facebook
-    .callbackPath(method + '://' + request.host + '/auth/facebook')
-    .redirectPath(method + '://' + request.host + '/home');
+  var method = request.headers['x-forwarded-proto'] || 'http';
 
   // if we have facebook auth credentials
   if (request.session.auth) {
