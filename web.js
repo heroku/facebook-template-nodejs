@@ -74,22 +74,22 @@ app.get('/home', function(request, response) {
       // generate a uuid for socket association
       var socket_id = uuid();
 
-      // query 3 friends and send them to the socket for this socket id
-      session.graphCall('/me/friends&limit=3')(function(result) {
+      // query 4 friends and send them to the socket for this socket id
+      session.graphCall('/me/friends&limit=4')(function(result) {
         result.data.forEach(function(friend) {
           socket_manager.send(socket_id, 'friend', friend);
         });
       });
 
-      // query 2 photos and send them to the socket for this socket id
-      session.graphCall('/me/photos&limit=2')(function(result) {
+      // query 16 photos and send them to the socket for this socket id
+      session.graphCall('/me/photos&limit=16')(function(result) {
         result.data.forEach(function(photo) {
           socket_manager.send(socket_id, 'photo', photo);
         });
       });
 
-      // query 11 likes and send them to the socket for this socket id
-      session.graphCall('/me/likes&limit=11')(function(result) {
+      // query 4 likes and send them to the socket for this socket id
+      session.graphCall('/me/likes&limit=4')(function(result) {
         result.data.forEach(function(like) {
           socket_manager.send(socket_id, 'like', like);
         });

@@ -54,6 +54,8 @@ header #picture + div {
 }
 
 header #picture {
+  background-position: center;
+  background-repeat: no-repeat;
   float: left;
   margin-right: 18px;
   width: 64px;
