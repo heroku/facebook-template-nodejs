@@ -54,12 +54,11 @@
         // when a friend is received from the backend, add it to the page
         socket.on('friend', function(friend) {
           console.log(friend);
-          $('ul#friends').append('                                                                    \
-            <li style="background-image: url(https://graph.facebook.com/' + friend.id + '/picture)">  \
-              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">       \
-                ' + friend.name + '                                                                   \
-              </a>                                                                                    \
-            </li>                                                                                     \
+          $('ul#friends').append('                                                                       \
+            <li>                                                                                         \
+              <img src="https://graph.facebook.com/' + friend.id + '/picture" alt="' + friend.name + '"> \
+              ' + friend.name + '                                                                        \
+            </li>                                                                                        \
           ');
         });
 
@@ -67,56 +66,62 @@
         socket.on('photo', function(photo) {
           $('ul#photos').append('                                  \
             <li>                                                   \
-              <a href="http://www.facebook.com/' + photo.id + '">  \
-                <img src="' + photo.source + '" width="163" />     \
-              </a>                                                 \
+              <img src="' + photo.source + '" width="163" />     \
             </li>                                                  \
           ');
+
+          $('ul#photos li:first, ul#photos li:nth-child(5n)')
+            .addClass('first-column');
         });
 
         // when a like is received from the backend, add it to the page
         socket.on('like', function(like) {
-          $('ul#likes').append('                                  \
-            <li>                                                  \
-              <a href="http://www.facebook.com/' + like.id + '">  \
-                ' + like.name + '                                 \
-              </a>                                                \
-            </li>                                                 \
+          $('ul#likes').append('                                   \
+            <li>                                                   \
+              <img src="https://graph.facebook.com/' + like.id +
+                '/picture?type=square" alt="' + like.name + '">    \
+                ' + like.name + '                                  \
+            </li>                                                  \
           ');
         });
 
         // when a friend is received from the backend, add it to the page
         socket.on('friend_using_app', function(friend) {
           console.log(friend);
-          $('ul#friends_using_app').append('                                                     \
-            <li style="background-image: url(' + friend.pic_square + ');">                       \
-              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">  \
-                ' + friend.name + '                                                              \
-              </a>                                                                               \
-            </li>                                                                                \
+          $('ul#friends_using_app').append('                                  \
+            <li>                                                              \
+              <img src="' + friend.pic_square + '" alt="' + friend.name + '"> \
+              ' + friend.name + '                                             \
+            </li>                                                             \
           ');
         });
       });
 
     </script>
+    <!--[if IE]>
+      <script>
+        var tags = ['header', 'section'];
+        while(tags.length)
+          document.createElement(tags.pop());
+      </script>
+    <![endif]-->
   </head>
   <body>
     <header class="clearfix">
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <a
-        href="#"
-        onclick="window.open('http://www.facebook.com/<%= user.id %>')">
+      <p id="picture">
         <img
-        src="https://graph.facebook.com/me/picture?type=large&access_token=<%= token %>"
-          height="64"
-        />
-      </a>
-
+          src="https://graph.facebook.com/me/picture?type=large&access_token=<%= token %>"
+          height="64">
+      </p>
       <div>
         <h1>Welcome, <strong><%= user.name %></strong></h1>
-        <p class="tagline">This app is named <%= app.name %></p>
+        <p class="tagline">
+          This is your app
+          <a href="<%= app.link %>"><%= app.name %></a>
+        </p>
         <div id="share-app">
           <p>Share your app:</p>
           <ul>

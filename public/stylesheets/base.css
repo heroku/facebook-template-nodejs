@@ -6,7 +6,6 @@
 /* =global elements
 --------------------------------------------- */
 body {
-  border: 1px solid #b3b3b3;
   color: #999;
   font: 14px/1.5em "Lucida Grande", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -26,7 +25,7 @@ a:hover, a:active {
 }
 
 h1 {
-  color: #1c1c1c;
+  color: #656565;
   font-family: "Helvetica Neue", Arial, sans-serif;
   font-size: 18px;
   font-weight: normal;
@@ -37,6 +36,9 @@ h1 {
 /* =header
 --------------------------------------------- */
 header {
+  border-left: 1px solid #b3b3b3;
+  border-right: 1px solid #b3b3b3;
+  border-top: 1px solid #b3b3b3;
   font-size: 11px;
   padding: 24px 18px;
 }
@@ -47,13 +49,16 @@ header h1 {
   padding: 2px 0 8px;
 }
 
-header img + div {
+header #picture + div {
   margin-left: 82px;
 }
 
-header img {
+header #picture {
   float: left;
   margin-right: 18px;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
 }
 
 header .tagline {
@@ -139,7 +144,7 @@ header .tagline {
   display: inline-block;
   font: bold 14px "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
   line-height: 32px;
-  padding: 0 40px;
+  padding: 0 25px;
   text-decoration: none;
   text-shadow: 0 1px 1px rgba(255, 255, 255, .2);
 }
@@ -149,6 +154,7 @@ header .tagline {
 --------------------------------------------- */
 #get-started {
   background: url("../images/get-started-bg.jpg");
+  border: 1px solid #353d4f;
   height: 105px;
   text-align: center;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .29);
@@ -183,8 +189,8 @@ header .tagline {
 #guides ul li,
 #samples .list {
   float: left;
-  margin-right: 9px;
-  width: 170px;
+  margin-right: 7px;
+  width: 172px;
 }
 
 #guides ul li p,
@@ -195,6 +201,11 @@ header .tagline {
 
 /* =guides
 --------------------------------------------- */
+#guides {
+  border-bottom: 1px solid #b3b3b3;
+  border-left: 1px solid #b3b3b3;
+  border-right: 1px solid #b3b3b3;
+}
 #guides ul li {
   font-size: 11px;
   list-style: none;
@@ -239,21 +250,10 @@ header .tagline {
 --------------------------------------------- */
 #samples {
   background-image: url("../images/samples-bg.png");
-  /*
-   * original
-  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, .25)), color-stop(1.5%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0))), url("../images/samples-bg.png");
-  background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  background-image: -o-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  background-image: -ms-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  background-image: linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  */
-
-  /* concept */
-  border-bottom: 1px solid #ccc;
-  -moz-box-shadow: 0 0 13px rgba(0, 0, 0, .2) inset;
-  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .2) inset;
-  box-shadow: 0 0 3px rgba(0, 0, 0, .2) inset;
+  border-bottom: 1px solid #dadada;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #fff;
 }
 
 #samples h3 {
@@ -266,55 +266,54 @@ header .tagline {
 }
 
 #samples ul {
+  background: url("../images/picture-sketch.png") 4px 8px;
   background-repeat: repeat-y;
-  height: 198px;
+  height: 161px;
   overflow: hidden;
   padding-top: 8px;
 }
 
-#samples ul#photos,
-#samples ul#friends {
-  background: none;
-}
-
 #samples li {
-  background-repeat: no-repeat;
-  background-position: top left;
   color: #7c7c7c;
   display: block;
   font-size: 11px;
   font-weight: bold;
+  height: 32px;
   line-height: 32px;
   margin-bottom: 11px;
+  overflow: hidden;
   padding-left: 36px;
+  position: relative;
 }
 
-#samples ul#friends li {
-  padding-left: 54px;
-  line-height: 50px;
+#samples .list img {
+  height: auto;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 32px;
 }
 
-#samples ul#things li {
-  padding-left: 12px;
-  line-height: 18px;
-  white-space:nowrap;
-}
-
-#samples ul#photos li {
-  margin-left: 0;
-  height: 82px;
+#samples .inline img {
+  position: static;
 }
 
 #samples .inline ul {
   background-repeat: repeat;
 }
+
 #samples .inline li {
   float: left;
-  height: 32px;
   margin-left: 12px;
   overflow: hidden;
   padding: 0;
+  width: 32px;
 }
+
+#samples .inline li.first-column {
+  margin-left: 0;
+}
+
 
 /* ------------------------------------------ */
 
