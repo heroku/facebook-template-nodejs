@@ -68,7 +68,7 @@
         socket.on('photo', function(photo) {
           $('ul#photos').append('                                     \
             <li style="background-image: url(' + photo.picture + ')"> \
-              <a href="http://www.facebook.com/' + photo.id + '">     \
+              <a href="#" onclick="window.open(\'http://www.facebook.com/' + photo.id + '\');">     \
               ' + photo.name + '                                      \
               </a>                                                    \
             </li>                                                     \
@@ -95,7 +95,7 @@
           console.log(friend);
           $('ul#friends_using_app').append('                                                    \
             <li>                                                                                \
-              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');"> \
+              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.uid + '\');"> \
                 <img src="' + friend.pic_square + '" alt="' + friend.name + '">                 \
                 ' + friend.name + '                                                             \
               </a>                                                                              \
