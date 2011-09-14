@@ -54,7 +54,7 @@ header #picture + div {
 }
 
 header #picture {
-  background-position: center;
+  background-position: center 25%;
   background-repeat: no-repeat;
   float: left;
   margin-right: 18px;
@@ -182,6 +182,7 @@ header .tagline {
 #guides h1,
 #samples h1 {
   margin-bottom: 15px;
+  text-align: center;
 }
 
 #guides, #samples {
@@ -208,13 +209,17 @@ header .tagline {
   border-left: 1px solid #b3b3b3;
   border-right: 1px solid #b3b3b3;
 }
+
 #guides ul li {
   font-size: 11px;
   list-style: none;
 }
 
 #guides ul li p {
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
   line-height: 20px;
+  text-align: justify;
 }
 
 #guides ul li:first-child {
@@ -253,8 +258,8 @@ header .tagline {
 #samples {
   background-image: url("../images/samples-bg.png");
   border-bottom: 1px solid #dadada;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
+  border-left: 1px solid #b3b3b3;
+  border-right: 1px solid #b3b3b3;
   border-top: 1px solid #fff;
 }
 
@@ -276,16 +281,24 @@ header .tagline {
 }
 
 #samples li {
+  background-repeat: no-repeat;
+  background-position: 0 0;
   color: #7c7c7c;
   display: block;
   font-size: 11px;
   font-weight: bold;
   height: 32px;
-  line-height: 32px;
   margin-bottom: 11px;
   overflow: hidden;
-  padding-left: 36px;
   position: relative;
+}
+
+#samples li a:link,
+#samples li a:visited {
+  color: #7c7c7c;
+  display: block;
+  line-height: 32px;
+  padding-left: 36px;
 }
 
 #samples .list img {
@@ -294,10 +307,6 @@ header .tagline {
   position: absolute;
   top: 0;
   width: 32px;
-}
-
-#samples .inline img {
-  position: static;
 }
 
 #samples .inline ul {
@@ -310,10 +319,23 @@ header .tagline {
   overflow: hidden;
   padding: 0;
   width: 32px;
+  background-position: center 25%;
+  background-repeat: no-repeat;
+  -moz-background-size: cover;
+  background-size: cover;
 }
 
 #samples .inline li.first-column {
   margin-left: 0;
+}
+
+#samples .inline li a:link,
+#samples .inline li a:visited {
+  display: block;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  text-indent: -9999px;
 }
 
 

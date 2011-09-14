@@ -54,20 +54,24 @@
         // when a friend is received from the backend, add it to the page
         socket.on('friend', function(friend) {
           console.log(friend);
-          $('ul#friends').append('                                                                       \
-            <li>                                                                                         \
-              <img src="https://graph.facebook.com/' + friend.id + '/picture" alt="' + friend.name + '"> \
-              ' + friend.name + '                                                                        \
-            </li>                                                                                        \
+          $('ul#friends').append('                                                                         \
+            <li>                                                                                           \
+              <a href="#" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">           \
+                <img src="https://graph.facebook.com/' + friend.id + '/picture" alt="' + friend.name + '"> \
+                ' + friend.name + '                                                                        \
+              </a>                                                                                         \
+            </li>                                                                                          \
           ');
         });
 
         // when a photo is received from the backend, add it to the page
         socket.on('photo', function(photo) {
-          $('ul#photos').append('                                  \
-            <li>                                                   \
-              <img src="' + photo.source + '" width="163" />     \
-            </li>                                                  \
+          $('ul#photos').append('                                     \
+            <li style="background-image: url(' + photo.picture + ')"> \
+              <a href="http://www.facebook.com/' + photo.id + '">     \
+              ' + photo.name + '                                      \
+              </a>                                                    \
+            </li>                                                     \
           ');
 
           $('ul#photos li:nth-child(4n+1)').addClass('first-column');
@@ -77,9 +81,11 @@
         socket.on('like', function(like) {
           $('ul#likes').append('                                   \
             <li>                                                   \
-              <img src="https://graph.facebook.com/' + like.id +
+              <a href="http://www.facebook.com/' + like.id + '">   \
+                <img src="https://graph.facebook.com/' + like.id +
                 '/picture?type=square" alt="' + like.name + '">    \
                 ' + like.name + '                                  \
+              </a>                                                 \
             </li>                                                  \
           ');
         });
@@ -87,11 +93,13 @@
         // when a friend is received from the backend, add it to the page
         socket.on('friend_using_app', function(friend) {
           console.log(friend);
-          $('ul#friends_using_app').append('                                  \
-            <li>                                                              \
-              <img src="' + friend.pic_square + '" alt="' + friend.name + '"> \
-              ' + friend.name + '                                             \
-            </li>                                                             \
+          $('ul#friends_using_app').append('                                                    \
+            <li>                                                                                \
+              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');"> \
+                <img src="' + friend.pic_square + '" alt="' + friend.name + '">                 \
+                ' + friend.name + '                                                             \
+              </a>                                                                              \
+            </li>                                                                               \
           ');
         });
       });
@@ -110,7 +118,7 @@
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <p id="picture" style="background: url(https://graph.facebook.com/me/picture?type=normal&access_token=<%= token %>)"></p>
+      <p id="picture" style="background-image: url(https://graph.facebook.com/me/picture?type=normal&access_token=<%= token %>)"></p>
       <div>
         <h1>Welcome, <strong><%= user.name %></strong></h1>
         <p class="tagline">
