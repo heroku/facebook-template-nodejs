@@ -12,7 +12,7 @@ var uuid = require('node-uuid');
 everyauth.facebook
   .appId(process.env.FACEBOOK_APP_ID)
   .appSecret(process.env.FACEBOOK_SECRET)
-  .scope('publish_actions,user_likes,user_photos,user_photo_video_tags')
+  .scope('user_likes,user_photos,user_photo_video_tags')
   .entryPath('/')
   .redirectPath('/home')
   .findOrCreateUser(function() {
