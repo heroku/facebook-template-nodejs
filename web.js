@@ -3,8 +3,7 @@ require.paths.unshift(__dirname + '/lib');
 var everyauth = require('everyauth');
 var express   = require('express');
 
-var FacebookClient = require('facebook-client').FacebookClient;
-var facebook = new FacebookClient();
+var fbgraph = require('fbgraph');
 
 var uuid = require('node-uuid');
 
@@ -66,48 +65,63 @@ app.get('/home', function(request, response) {
   // if we have facebook auth credentials
   if (request.session.auth) {
 
-    // initialize facebook-client with the access token to gain access
+    // initialize fbgraph with the access token to gain access
     // to helper methods for the REST api
     var token = request.session.auth.facebook.accessToken;
-    facebook.getSessionByAccessToken(token)(function(session) {
+    fbgraph.setAccessToken(token);
 
-      // generate a uuid for socket association
-      var socket_id = uuid();
+    // generate a uuid for socket association
+    var socket_id = uuid();
 
-      // query 4 friends and send them to the socket for this socket id
-      session.graphCall('/me/friends&limit=4')(function(result) {
-        result.data.forEach(function(friend) {
-          socket_manager.send(socket_id, 'friend', friend);
-        });
+    fbgraph.get('/me/friends&limit=4', function(err, result) {
+      if(err) {
+        console.log('Error Retrieving Friends', err);
+        return false;
+      }
+      result.data.forEach(function(friend) {
+        socket_manager.send(socket_id, 'friend', friend);
       });
+    });
 
-      // query 16 photos and send them to the socket for this socket id
-      session.graphCall('/me/photos&limit=16')(function(result) {
-        result.data.forEach(function(photo) {
-          socket_manager.send(socket_id, 'photo', photo);
-        });
+    // query 16 photos and send them to the socket for this socket id
+    fbgraph.get('/me/photos&limit=16', function(err, result) {
+      if(err) {
+        console.log('Error Retrieving Photos', err);
+        return false;
+      }
+      result.data.forEach(function(photo) {
+        socket_manager.send(socket_id, 'photo', photo);
       });
+    });
 
-      // query 4 likes and send them to the socket for this socket id
-      session.graphCall('/me/likes&limit=4')(function(result) {
-        result.data.forEach(function(like) {
-          socket_manager.send(socket_id, 'like', like);
-        });
+    // query 4 likes and send them to the socket for this socket id
+    fbgraph.get('/me/likes&limit=4', function(err, result) {
+      if(err) {
+        console.log('Error Retrieving Likes', err);
+        return false;
+      }
+      result.data.forEach(function(like) {
+        socket_manager.send(socket_id, 'like', like);
       });
+    });
 
       // use fql to get a list of my friends that are using this app
-      session.restCall('fql.query', {
-        query: 'SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1',
-        format: 'json'
-      })(function(result) {
-        result.forEach(function(friend) {
+      fbgraph.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(err, result) {
+        if(err) {
+          console.log('Error Retrieving App Users', err);
+          return false;
+        }
+        result.data.forEach(function(friend) {
           socket_manager.send(socket_id, 'friend_using_app', friend);
         });
       });
 
       // get information about the app itself
-      session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
-
+      fbgraph.get('/' + process.env.FACEBOOK_APP_ID, function(err, app) {
+        if(err) {
+          response.end('Error Retrieving Application Information');
+          return false;
+        }
         // render the home page
         response.render('home.ejs', {
           layout:   false,
@@ -118,8 +132,6 @@ app.get('/home', function(request, response) {
           redirect: method + '://' + request.headers.host + request.url,
           socket_id: socket_id
         });
-
-      });
     });
 
   } else {

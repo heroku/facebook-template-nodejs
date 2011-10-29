@@ -6,7 +6,7 @@
     "ejs": "0.4.3",
     "everyauth": "0.2.18",
     "express": "2.4.6",
-    "facebook-client": "1.3.0",
+    "fbgraph": "0.2.1",
     "facebook": "0.0.3",
     "node-uuid": "1.2.0",
     "socket.io": "0.8.4"
