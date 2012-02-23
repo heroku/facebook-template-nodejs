@@ -3,6 +3,7 @@
   "version":     "0.0.1",
   "description": "Template app for Heroku / Facebook integration, Node.js language",
   "dependencies": {
+    "b64url": "1.0.3",
     "ejs": "0.4.3",
     "everyauth": "0.2.18",
     "express": "2.4.6",

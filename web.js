@@ -1,20 +1,20 @@
 require.paths.unshift(__dirname + '/lib');
 
+var base64url = require('b64url');
+var crypto    = require('crypto');
 var everyauth = require('everyauth');
 var express   = require('express');
-
-var FacebookClient = require('facebook-client').FacebookClient;
-var facebook = new FacebookClient();
-
-var uuid = require('node-uuid');
+var facebook  = new (require('facebook-client').FacebookClient)();
+var sys       = require('sys');
+var uuid      = require('node-uuid');
 
 // configure facebook authentication
 everyauth.facebook
   .appId(process.env.FACEBOOK_APP_ID)
   .appSecret(process.env.FACEBOOK_SECRET)
   .scope('user_likes,user_photos,user_photo_video_tags')
-  .entryPath('/')
-  .redirectPath('/home')
+  .entryPath('/auth/facebook')
+  .redirectPath('/')
   .findOrCreateUser(function() {
     return({});
   })
@@ -23,13 +23,14 @@ everyauth.facebook
 var app = express.createServer(
   express.logger(),
   express.static(__dirname + '/public'),
+  express.bodyParser(),
   express.cookieParser(),
   // set this to a secret value to encrypt session cookies
   express.session({ secret: process.env.SESSION_SECRET || 'secret123' }),
   // insert a middleware to set the facebook redirect hostname to http/https dynamically
-  function(request, response, next) {
-    var method = request.headers['x-forwarded-proto'] || 'http';
-    everyauth.facebook.myHostname(method + '://' + request.headers.host);
+  function(req, res, next) {
+    var method = req.headers['x-forwarded-proto'] || 'http';
+    everyauth.facebook.myHostname(method + '://' + req.headers.host);
     next();
   },
   everyauth.middleware(),
@@ -41,6 +42,25 @@ var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
   console.log("Listening on " + port);
+});
+
+app.dynamicHelpers({
+  'host': function(req, res) {
+    return req.headers['host'];
+  },
+  'scheme': function(req, res) {
+    req.headers['x-forwarded-proto'] || 'http'
+  },
+  'url': function(req, res) {
+    return function(path) {
+      return app.dynamicViewHelpers.scheme(req, res) + app.dynamicViewHelpers.url_no_scheme(path);
+    }
+  },
+  'url_no_scheme': function(req, res) {
+    return function(path) {
+      return '://' + app.dynamicViewHelpers.host(req, res) + path;
+    }
+  },
 });
 
 // create a socket.io backend for sending facebook graph data
@@ -57,22 +77,19 @@ io.configure(function () {
   io.set("polling duration", 10);
 });
 
-// respond to GET /home
-app.get('/home', function(request, response) {
+function render_facebook_page(req, res, user, token) {
 
-  // detect the http method uses so we can replicate it on redirects
-  var method = request.headers['x-forwarded-proto'] || 'http';
+  console.log('user:' + user);
+  console.log('token:' + token);
 
-  // if we have facebook auth credentials
-  if (request.session.auth) {
+  // generate a uuid for socket association
+  var socket_id = uuid();
 
-    // initialize facebook-client with the access token to gain access
-    // to helper methods for the REST api
-    var token = request.session.auth.facebook.accessToken;
+  // if the user is logged in
+  if (token) {
+
+    // initialize facebook-client with the access token
     facebook.getSessionByAccessToken(token)(function(session) {
-
-      // generate a uuid for socket association
-      var socket_id = uuid();
 
       // query 4 friends and send them to the socket for this socket id
       session.graphCall('/me/friends&limit=4')(function(result) {
@@ -105,27 +122,73 @@ app.get('/home', function(request, response) {
         });
       });
 
-      // get information about the app itself
-      session.graphCall('/' + process.env.FACEBOOK_APP_ID)(function(app) {
+    });
+  }
 
-        // render the home page
-        response.render('home.ejs', {
-          layout:   false,
-          token:    token,
-          app:      app,
-          user:     request.session.auth.facebook.user,
-          home:     method + '://' + request.headers.host + '/',
-          redirect: method + '://' + request.headers.host + request.url,
-          socket_id: socket_id
-        });
+  // get information about the app itself
+  facebook.graphCall('/' + process.env.FACEBOOK_APP_ID, {})(function(app) {
 
+    // render the home page
+    res.render('index.ejs', {
+      layout:    false,
+      token:     token,
+      app:       app,
+      user:      user,
+      socket_id: socket_id
+    });
+
+  });
+}
+
+app.post('/', function(req, res) {
+  var signed_request = req.body.signed_request;
+  var secret = process.env.FACEBOOK_SECRET;
+
+  if (signed_request) {
+    encoded_data = signed_request.split('.', 2);
+
+    // decode the data
+    var sig = encoded_data[0];
+    var json = base64url.decode(encoded_data[1]);
+    var data = JSON.parse(json);
+
+    // check algorithm
+    if (!data.algorithm || (data.algorithm.toUpperCase() != 'HMAC-SHA256')) {
+      throw("unknown algorithm. expected hmac-sha256");
+    }
+
+    // check sig
+    var expected_sig = crypto.createHmac('sha256', secret).update(encoded_data[1]).digest('base64').replace(/\+/g,'-').replace(/\//g,'_').replace('=','');
+
+    if (sig !== expected_sig) {
+      throw("bad signature");
+    }
+
+    facebook.getSessionByAccessToken(data.oauth_token)(function(session) {
+      session.graphCall('/me')(function(user) {
+        console.log('==========================================');
+        console.log('user:' + user);
+        console.log('token:' + data.oauth_token);
+        render_facebook_page(req, res, user, data.oauth_token);
       });
     });
 
   } else {
-
-    // not authenticated, redirect to / for everyauth to begin authentication
-    response.redirect('/');
-
+    render_facebook_page(req, res);
   }
+});
+
+// respond to GET /home
+app.get('/', function(req, res) {
+
+  // detect the http method uses so we can replicate it on redirects
+  var method = req.headers['x-forwarded-proto'] || 'http';
+
+  // if we authed, get some information
+  if (req.session.auth) {
+    render_facebook_page(req, res, req.session.auth.facebook.user, req.session.auth.facebook.accessToken);
+  } else {
+    render_facebook_page(req, res);
+  }
+
 });

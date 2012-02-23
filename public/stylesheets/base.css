@@ -9,9 +9,8 @@ body {
   color: #999;
   font: 14px/1.5em "Lucida Grande", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  width: 742px;
-
-  margin: 20px; /* NOTE: Temporary */
+  width: 720px;
+  margin: 20px;
 }
 
 a:link, a:visited {
@@ -56,6 +55,7 @@ header #picture + div {
 header #picture {
   background-position: center 25%;
   background-repeat: no-repeat;
+  background-size: 64px;
   float: left;
   margin-right: 18px;
   width: 64px;
@@ -69,7 +69,7 @@ header .tagline {
 
 #share-app {
   float: right;
-  width: 318px;
+  width: 344px;
 }
 
 #share-app ul {
@@ -78,6 +78,7 @@ header .tagline {
 
 #share-app p {
   float: left;
+  margin-left: 8px;
 }
 
 #share-app li {
@@ -85,6 +86,7 @@ header .tagline {
   list-style: none;
   margin-left: 8px;
 }
+
 /* ------------------------------------------ */
 
 /* =buttons
@@ -125,6 +127,10 @@ header .tagline {
 
 .facebook-button .plus {
   background-position: 6px -17px;
+}
+
+.facebook-button .apprequests {
+  background-position: 6px -37px;
 }
 
 .button:link, .button:visited {
@@ -186,13 +192,13 @@ header .tagline {
 }
 
 #guides, #samples {
-  padding: 20px 10px 20px 14px;
+  padding: 20px 5px 20px 10px;
 }
 
 #guides ul li,
 #samples .list {
   float: left;
-  margin-right: 7px;
+  margin-right: 3px;
   width: 172px;
 }
 
@@ -220,10 +226,6 @@ header .tagline {
   -webkit-hyphens: auto;
   line-height: 20px;
   text-align: justify;
-}
-
-#guides ul li:first-child {
-  margin-left: 0;
 }
 
 #guides ul li a.icon {
@@ -336,6 +338,11 @@ header .tagline {
   height: 32px;
   overflow: hidden;
   text-indent: -9999px;
+}
+
+#samples .inline .photos li {
+  margin-left: 0;
+  margin-right: 12px;
 }
 
 
