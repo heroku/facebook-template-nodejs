@@ -79,9 +79,6 @@ io.configure(function () {
 
 function render_facebook_page(req, res, user, token) {
 
-  console.log('user:' + user);
-  console.log('token:' + token);
-
   // generate a uuid for socket association
   var socket_id = uuid();
 
@@ -166,9 +163,6 @@ app.post('/', function(req, res) {
 
     facebook.getSessionByAccessToken(data.oauth_token)(function(session) {
       session.graphCall('/me')(function(user) {
-        console.log('==========================================');
-        console.log('user:' + user);
-        console.log('token:' + data.oauth_token);
         render_facebook_page(req, res, user, data.oauth_token);
       });
     });
