@@ -22,11 +22,10 @@
     <meta property="og:url" content="<%= url() %>" />
     <meta property="og:image" content="<%= url('/logo.png') %>" />
     <meta property="og:site_name" content="<%= app.name %>" />
-    <meta property="og:description" content="My First App" />
+    <meta property="og:description" content="My first app" />
     <meta property="fb:app_id" content="<%= app.id %>" />
 
     <script type="text/javascript" src="/scripts/jquery.min.js"></script>
-    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
     <script type="text/javascript">
       function logResponse(response) {
@@ -84,79 +83,6 @@
       });
     </script>
 
-    <script type="text/javascript">
-
-      function popup(pageURL, title,w,h) {
-        var left = (screen.width/2)-(w/2);
-        var top = (screen.height/2)-(h/2);
-        var targetWin = window.open(
-          pageURL,
-          title,
-          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left
-          );
-      }
-
-      // open a socket.io connection to the backend
-      var socket = io.connect();
-
-      socket.on('connect', function() {
-
-        // identify this socket with our auth token
-        socket.emit('auth', '<%= socket_id %>');
-
-        // when a friend is received from the backend, add it to the page
-        socket.on('friend', function(friend) {
-          $('ul#friends').append('                                                                         \
-            <li>                                                                                           \
-              <a href="#" onclick="window.open(\'http://www.facebook.com/' + friend.id + '\');">           \
-                <img src="https://graph.facebook.com/' + friend.id + '/picture?type=square" alt="' + friend.name + '"> \
-                ' + friend.name + '                                                                        \
-              </a>                                                                                         \
-            </li>                                                                                          \
-          ');
-        });
-
-        // when a photo is received from the backend, add it to the page
-        socket.on('photo', function(photo) {
-          $('ul#photos').append('                                     \
-            <li style="background-image: url(' + photo.picture + ')"> \
-              <a href="#" onclick="window.open(\'http://www.facebook.com/' + photo.id + '\');">     \
-              ' + photo.name + '                                      \
-              </a>                                                    \
-            </li>                                                     \
-          ');
-
-          $('ul#photos li:nth-child(4n+1)').addClass('first-column');
-        });
-
-        // when a like is received from the backend, add it to the page
-        socket.on('like', function(like) {
-          $('ul#likes').append('                                   \
-            <li>                                                   \
-              <a href="http://www.facebook.com/' + like.id + '">   \
-                <img src="https://graph.facebook.com/' + like.id +
-                '/picture?type=square" alt="' + like.name + '">    \
-                ' + like.name + '                                  \
-              </a>                                                 \
-            </li>                                                  \
-          ');
-        });
-
-        // when a friend is received from the backend, add it to the page
-        socket.on('friend_using_app', function(friend) {
-          $('ul#friends_using_app').append('                                                    \
-            <li>                                                                                \
-              <a href="" onclick="window.open(\'http://www.facebook.com/' + friend.uid + '\');"> \
-                <img src="' + friend.pic_square + '" alt="' + friend.name + '">                 \
-                ' + friend.name + '                                                             \
-              </a>                                                                              \
-            </li>                                                                               \
-          ');
-        });
-      });
-
-    </script>
-
     <!--[if IE]>
       <script type="text/javascript">
         var tags = ['header', 'section'];
@@ -180,7 +106,7 @@
         // Listen to the auth.login which will be called when the user logs in
         // using the Login button
         FB.Event.subscribe('auth.login', function(response) {
-          // We want to reload the page now so Ruby can read the cookie that the
+          // We want to reload the page now so PHP can read the cookie that the
           // Javascript SDK sat. But we don't want to use
           // window.location.reload() because if this is in a canvas there was a
           // post made to this page and a reload will trigger a message to the
@@ -203,42 +129,41 @@
 
     <header class="clearfix">
       <% if (user) { %>
-          <p id="picture" style="background-image: url(https://graph.facebook.com/<%= user.id %>/picture?type=normal)"></p>
-          <div>
-            <h1>Welcome, <strong><%= user.name %></strong></h1>
-            <p class="tagline">
-              This is your app
-              <a href="<%= app.link %>"><%= app.name %></a>
-            </p>
-            <div id="share-app">
-              <p>Share your app:</p>
-              <ul>
-                <li>
-                  <a href="#" class="facebook-button" id="postToWall" data-url="<%= url() %>">
-                    <span class="plus">Post to Wall</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="facebook-button speech-bubble" id="sendToFriends" data-url="<%= url() %>">
-                    <span class="speech-bubble">Send Message</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="facebook-button apprequests" id="sendRequest" data-message="Test this awesome app">
-                    <span class="apprequests">Send Requests</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-      <% } else { %>
-        <div>
-          <h1>Welcome</h1>
-            <a href='/auth/facebook' class="fb_button fb_button_medium">
-              <span class="fb_button_text">Log In</span>
-            </a>
-        </div>
+      <p id="picture" style="background-image: url(https://graph.facebook.com/<%= user.id %>>/picture?type=normal)"></p>
 
+      <div>
+        <h1>Welcome, <strong><%= user.name %></strong></h1>
+        <p class="tagline">
+          This is your app
+          <a href="<%= app.link %>" target="_top"><%= app.name %></a>
+        </p>
+
+        <div id="share-app">
+          <p>Share your app:</p>
+          <ul>
+            <li>
+              <a href="#" class="facebook-button" id="postToWall" data-url="<%= url() %>">
+                <span class="plus">Post to Wall</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="facebook-button speech-bubble" id="sendToFriends" data-url="<%= url() %>">
+                <span class="speech-bubble">Send Message</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="facebook-button apprequests" id="sendRequest" data-message="Test this awesome app">
+                <span class="apprequests">Send Requests</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <% } else { %>
+      <div>
+        <h1>Welcome</h1>
+        <div class="fb-login-button" data-scope="user_likes,user_photos"></div>
+      </div>
       <% } %>
     </header>
 
@@ -247,41 +172,65 @@
       <a href="https://devcenter.heroku.com/articles/facebook" target="_top" class="button">Learn How to Edit This App</a>
     </section>
 
-
     <% if (user) { %>
-      <section id="samples" class="clearfix">
-          <h1>Examples of the Facebook Graph API</h1>
 
-          <div class="list">
-            <h3>A few of your friends</h3>
-            <ul id="friends" class="friends" />
-          </div>
+    <section id="samples" class="clearfix">
+      <h1>Examples of the Facebook Graph API</h1>
 
-          <div class="list inline">
-            <h3>Recent photos</h3>
-            <ul id="photos" class="photos" />
-          </div>
+      <div class="list">
+        <h3>A few of your friends</h3>
+        <ul id="friends" class="friends">
+          <% req.friends.forEach(function(friend) { %>
+            <li>
+              <a href="https://www.facebook.com/<%= friend.id %>" target="_top">
+                <img src="https://graph.facebook.com/<%= friend.id %>/picture?type=square" alt="<%= friend.name %>">
+                <%= friend.name %>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
 
-          <div class="list">
-            <h3>Things you like</h3>
-            <ul id="likes" class="things" />
-          </div>
+      <div class="list inline">
+        <h3>Recent photos</h3>
+        <ul id="photos" class="photos">
+          <% req.photos.forEach(function(photo) { %>
+            <li style="background-image: url(<%= photo.picture %>>);" class="<%= photo.link %>">
+              <a href="<%= photo.link %>>" target="_top"></a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
 
-          <div class="list">
-            <h3>Friends using this app</h3>
-            <ul id="friends_using_app" class="friends" />
-          </div>
-        </section>
+      <div class="list">
+        <h3>Things you like</h3>
+        <ul id="likes" class="things">
+          <% req.likes.forEach(function(like) { %>
+            <li>
+              <a href="https://www.facebook.com/<%= like.id %>" target="_top">
+                <img src="https://graph.facebook.com/<%= like.id %>/picture?type=square" alt="<%= like.name %>">
+                <%= like.name %>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+
+      <div class="list">
+        <h3>Friends using this app</h3>
+        <ul id="friends_using_app" class="friends" />
+      </div>
+
+    </section>
 
     <% } %>
-
 
     <section id="guides" class="clearfix">
       <h1>Learn More About Heroku &amp; Facebook Apps</h1>
       <ul>
         <li>
-          <a href="https://www.heroku.com/" target="_top" class="icon heroku">Heroku</a>
-          <p>Learn more about <a href="https://www.heroku.com/" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
+          <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top" class="icon heroku">Heroku</a>
+          <p>Learn more about <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
         </li>
         <li>
           <a href="https://developers.facebook.com/docs/guides/web/" target="_top" class="icon websites">Websites</a>
@@ -305,3 +254,4 @@
     </section>
   </body>
 </html>
+
