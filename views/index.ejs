@@ -221,8 +221,8 @@
         <ul id="friends_using_app" class="friends">
           <% req.friends_using_app.forEach(function(friend) { %>
             <li>
-              <a href="https://www.facebook.com/<%= friend.id %>>" target="_top">
-                <img src="https://graph.facebook.com/<%= friend.id %>>/picture?type=square" alt="<%= friend.name %>">
+              <a href="https://www.facebook.com/<%= friend.uid %>" target="_top">
+                <img src="https://graph.facebook.com/<%= friend.uid %>/picture?type=square" alt="<%= friend.name %>">
                 <%= friend.name %>
               </a>
             </li>
