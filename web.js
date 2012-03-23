@@ -29,16 +29,16 @@ app.dynamicHelpers({
     return req.headers['host'];
   },
   'scheme': function(req, res) {
-    req.headers['x-forwarded-proto'] || 'http'
+    return req.headers['x-forwarded-proto'] || 'http';
   },
   'url': function(req, res) {
     return function(path) {
-      return app.dynamicViewHelpers.scheme(req, res) + app.dynamicViewHelpers.url_no_scheme(path);
+      return app.dynamicViewHelpers.scheme(req, res) + app.dynamicViewHelpers.url_no_scheme(req, res)(path);
     }
   },
   'url_no_scheme': function(req, res) {
     return function(path) {
-      return '://' + app.dynamicViewHelpers.host(req, res) + path;
+      return '://' + app.dynamicViewHelpers.host(req, res) + (path || '');
     }
   },
 });
