@@ -195,8 +195,8 @@
         <h3>Recent photos</h3>
         <ul id="photos" class="photos">
           <% req.photos.forEach(function(photo) { %>
-            <li style="background-image: url(<%= photo.picture %>>);" class="<%= photo.link %>">
-              <a href="<%= photo.link %>>" target="_top"></a>
+            <li style="background-image: url(<%= photo.picture %>);" class="<%= photo.link %>">
+              <a href="<%= photo.link %>" target="_top"></a>
             </li>
           <% }); %>
         </ul>
@@ -221,8 +221,8 @@
         <ul id="friends_using_app" class="friends">
           <% req.friends_using_app.forEach(function(friend) { %>
             <li>
-              <a href="https://www.facebook.com/<%= friend.id %>>" target="_top">
-                <img src="https://graph.facebook.com/<%= friend.id %>>/picture?type=square" alt="<%= friend.name %>">
+              <a href="https://www.facebook.com/<%= friend.id %>" target="_top">
+                <img src="https://graph.facebook.com/<%= friend.id %>/picture?type=square" alt="<%= friend.name %>">
                 <%= friend.name %>
               </a>
             </li>
