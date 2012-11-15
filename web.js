@@ -3,7 +3,7 @@ var async   = require('async')
   , util    = require('util')
   , path    = require('path')
   , http    = require('http');
- 
+
 
 // create an express webserver
 var app = express();
@@ -31,7 +31,7 @@ app.configure(function(){
   app.use(function(req, res, next) {
     res.locals.url = function(path) {
       return res.locals.scheme + res.locals.url_no_scheme(path);
-    }; 
+    };
     next();
   });
   app.use(function(req, res, next) {
