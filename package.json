@@ -5,13 +5,15 @@
   "description": "Template app for Heroku / Facebook integration, Node.js language",
 
   "dependencies": {
-    "async":     "0.1.18",
-    "ejs":       "0.4.3",
-    "express":   "2.4.6",
-    "faceplate": "0.0.4"
+    "async":     "0.1.22",
+    "express":   "3.0.3",
+    "ejs":       "0.8.3",
+    "faceplate": "0.4.0",
+    "socket.io": "0.9.11"
   },
 
   "engines": {
-    "node": "0.6.x"
+    "node": "0.8.x",
+    "npm":  "1.1.x"
   }
 }

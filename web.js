@@ -1,46 +1,49 @@
-var async   = require('async');
-var express = require('express');
-var util    = require('util');
+var async   = require('async')
+  , express = require('express')
+  , util    = require('util')
+  , path    = require('path')
+  , http    = require('http');
+
 
 // create an express webserver
-var app = express.createServer(
-  express.logger(),
-  express.static(__dirname + '/public'),
-  express.bodyParser(),
-  express.cookieParser(),
+var app = express();
+app.configure(function(){
+  app.set('port', process.env.PORT || 3000);
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.static(path.join(__dirname, 'public')));
   // set this to a secret value to encrypt session cookies
-  express.session({ secret: process.env.SESSION_SECRET || 'secret123' }),
-  require('faceplate').middleware({
+  app.use(express.session({ secret: process.env.SESSION_SECRET || 'secret123' }));
+  app.use(require('faceplate').middleware({
     app_id: process.env.FACEBOOK_APP_ID,
     secret: process.env.FACEBOOK_SECRET,
     scope:  'user_likes,user_photos,user_photo_video_tags'
-  })
-);
-
-// listen to the PORT given to us in the environment
-var port = process.env.PORT || 3000;
-
-app.listen(port, function() {
-  console.log("Listening on " + port);
+  }));
+  app.use(function(req, res, next) {
+    res.locals.host =  req.headers['host'];
+    next();
+  });
+  app.use(function(req, res, next) {
+    res.locals.scheme = req.headers['x-forwarded-proto'] || 'http';
+    next();
+  });
+  app.use(function(req, res, next) {
+    res.locals.url = function(path) {
+      return res.locals.scheme + res.locals.url_no_scheme(path);
+    };
+    next();
+  });
+  app.use(function(req, res, next) {
+    res.locals.url_no_scheme = function(path) {
+      return '://' + res.locals.host + (path || '');
+    };
+    next();
+  });
 });
 
-app.dynamicHelpers({
-  'host': function(req, res) {
-    return req.headers['host'];
-  },
-  'scheme': function(req, res) {
-    return req.headers['x-forwarded-proto'] || 'http';
-  },
-  'url': function(req, res) {
-    return function(path) {
-      return app.dynamicViewHelpers.scheme(req, res) + app.dynamicViewHelpers.url_no_scheme(req, res)(path);
-    }
-  },
-  'url_no_scheme': function(req, res) {
-    return function(path) {
-      return '://' + app.dynamicViewHelpers.host(req, res) + (path || '');
-    }
-  },
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
 });
 
 function render_page(req, res) {
@@ -57,29 +60,28 @@ function render_page(req, res) {
 }
 
 function handle_facebook_request(req, res) {
-
   // if the user is logged in
   if (req.facebook.token) {
 
     async.parallel([
       function(cb) {
         // query 4 friends and send them to the socket for this socket id
-        req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
-          req.friends = friends;
+        req.facebook.get('/me/friends', { limit: 4 }, function(e, friends) {
+          req.friends = friends.data;
           cb();
         });
       },
       function(cb) {
         // query 16 photos and send them to the socket for this socket id
-        req.facebook.get('/me/photos', { limit: 16 }, function(photos) {
-          req.photos = photos;
+        req.facebook.get('/me/photos', { limit: 16 }, function(e, photos) {
+          req.photos = photos.data;
           cb();
         });
       },
       function(cb) {
         // query 4 likes and send them to the socket for this socket id
-        req.facebook.get('/me/likes', { limit: 4 }, function(likes) {
-          req.likes = likes;
+        req.facebook.get('/me/likes', { limit: 4 }, function(e, likes) {
+          req.likes = likes.data;
           cb();
         });
       },
