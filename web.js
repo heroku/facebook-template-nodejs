@@ -66,21 +66,21 @@ function handle_facebook_request(req, res) {
     async.parallel([
       function(cb) {
         // query 4 friends and send them to the socket for this socket id
-        req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
+        req.facebook.get('/me/friends', { limit: 4 }, function(err, friends) {
           req.friends = friends;
           cb();
         });
       },
       function(cb) {
         // query 16 photos and send them to the socket for this socket id
-        req.facebook.get('/me/photos', { limit: 16 }, function(photos) {
+        req.facebook.get('/me/photos', { limit: 16 }, function(err, photos) {
           req.photos = photos;
           cb();
         });
       },
       function(cb) {
         // query 4 likes and send them to the socket for this socket id
-        req.facebook.get('/me/likes', { limit: 4 }, function(likes) {
+        req.facebook.get('/me/likes', { limit: 4 }, function(err, likes) {
           req.likes = likes;
           cb();
         });
