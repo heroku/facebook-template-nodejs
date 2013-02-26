@@ -23,7 +23,7 @@
     <meta property="og:image" content="<%= url('/logo.png') %>" />
     <meta property="og:site_name" content="<%= app.name %>" />
     <meta property="og:description" content="My first app" />
-    <meta property="fb:app_id" content="<%= app.id %>" />
+    <meta property="fb:app_id" content="<%= req.facebook.plate.app_id %>" />
 
     <script type="text/javascript" src="/scripts/jquery.min.js"></script>
 
@@ -96,7 +96,7 @@
     <script type="text/javascript">
       window.fbAsyncInit = function() {
         FB.init({
-          appId      : '<%= app.id %>', // App ID
+          appId      : '<%= req.facebook.plate.app_id %>', // App ID
           channelUrl : '<%= url_no_scheme('/channel.html') %>', // Channel File
           status     : true, // check login status
           cookie     : true, // enable cookies to allow the server to access the session
