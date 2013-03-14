@@ -1,8 +1,7 @@
-var async   = require('async')
-  , express = require('express')
-  , util    = require('util')
-  , path    = require('path')
-  , http    = require('http');
+var async   = require('async');
+var express = require('express');
+var path    = require('path');
+var http    = require('http');
 
 
 // create an express webserver
@@ -47,8 +46,8 @@ http.createServer(app).listen(app.get('port'), function(){
 });
 
 function render_page(req, res) {
-  req.facebook.app(function(app) {
-    req.facebook.me(function(user) {
+  req.facebook.app(function(err,app) {
+    req.facebook.me(function(err,user) {
       res.render('index.ejs', {
         layout:    false,
         req:       req,
@@ -87,7 +86,7 @@ function handle_facebook_request(req, res) {
       },
       function(cb) {
         // use fql to get a list of my friends that are using this app
-        req.facebook.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(result) {
+        req.facebook.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(err,result) {
           req.friends_using_app = result;
           cb();
         });
