@@ -195,7 +195,7 @@
         <h3>Recent photos</h3>
         <ul id="photos" class="photos">
           <% req.photos.forEach(function(photo) { %>
-            <li style="background-image: url(<%= photo.picture %>);" class="<%= photo.link %>">
+            <li style="background-image: url(<%= photo.picture %>);">
               <a href="<%= photo.link %>" target="_top"></a>
             </li>
           <% }); %>
