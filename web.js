@@ -40,7 +40,7 @@ app.dynamicHelpers({
     return function(path) {
       return '://' + app.dynamicViewHelpers.host(req, res) + (path || '');
     }
-  },
+  }
 });
 
 function render_page(req, res) {
