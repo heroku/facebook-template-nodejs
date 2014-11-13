@@ -8,7 +8,7 @@ Run locally
 
 Install dependencies:
 
-    npm bundle install
+    npm install
 
 [Create an app on Facebook](https://developers.facebook.com/apps) and set the Website URL to `http://localhost:5000/`.
 
